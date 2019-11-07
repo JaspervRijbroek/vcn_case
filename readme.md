@@ -62,6 +62,17 @@ A few resources can be used for the conversion, the former being less reliable a
     4. Get the current conversion for all the currencies, and store them in the DB.
     5. Store the current conversion rates in the historic DB.
     
+5. User registration
+    1. This will be a manual task for how, this might be automated by giving an authorization based on Ideal or paypal.
+    2. Because this is manual a command line command will be created to create a new account. The account will need an email address.
+        The password will be mailed to the user so he can login.
+        
+6. Endpoints
+    1. /login: Show the login
+    2. /: This will be the currency converter
+    3. /api/rate/{currency}: Get the conversion rates of the initially selected currency.
+    4. /api/history/{currency_from}/{currency_to}: Get the historic data of the currency conversion.
+    
 # Pitfalls
 
 - Although far-fetched when a user is offline the currency converter doesn't work.
