@@ -23,18 +23,18 @@ A few resources can be used for the conversion, the former being less reliable a
 - PHP Soap: This is to interface with currencyvonverter.kowabunga.net.
 - Laravel: This will hold the base endpoints. This because it is easily securable and fast also supports all other functionality that is required.
 - BootstrapCSS: This is because I am not that great with CSS and will take some pain away.
-- jQuery: This will handle all user input, used because it is cross platform compatible.
+- jQuery: This will handle all user input, used because it is cross-platform compatible.
 - TypeScript: Because we will work in bigger teams and the type definitions are a blessing in that regard.
-- Select2: This is a clean, well supported dropdown with autocomplete.
+- Select2: This is a clean, well-supported dropdown with autocomplete.
 - WebPack: To make everything as small as possible and not include more javascript than needed.
 - NodeJS + SocketIO: This to allow for real-time communication of the new conversion rates when available.[^1]
-- (The laravel application will send information to nodejs, so a web server on nodejs is also required).
+- (The Laravel application will send information to Nodejs, so a web server on Nodejs is also required).
 
 ## My way of working
 
-1. First I checked out the provided paper & screenshot and started thinking on what we needed.
-    1. By interface I decided that select2, bootstrap and jQuery are needed to provide for a clean interface.
-    2. An API is also needed for the AJAX calls that will be send to the server.
+1. First I checked out the provided paper & screenshot and started thinking about what we needed.
+    1. By interface, I decided that select2, bootstrap, and jQuery are needed to provide for a clean interface.
+    2. An API is also needed for the AJAX calls that will be sent to the server.
     3. Based on the requirements I decided that caching for the currencies is in order, this will be stored in the database.
     4. Because the currencies are current for one day, a cronjob will be added to sync the currencies and cache the new data,
         historic data will be saved in another database.
@@ -50,22 +50,22 @@ A few resources can be used for the conversion, the former being less reliable a
         3. getRatesByCurrency (accepts a currency code)
 
 3. Interface information
-    1. AJAX will be used to retrieve all the information from the server, this will provide for a smooth user experience.
+    1. AJAX will be used to retrieve all the information from the server, this will provide for smooth user experience.
     2. As information will become available at some time, sockets will be used to distribute new information to all the users when available.[^1]
     3. A check for online status will also be given [^1]
     4. Based on the currency conversion the historic data will be retrieved, this will also be done with AJAX.
     
 4. Cronjobs
-    1. A command line command will be introduced, this will start the collection of new rates.
+    1. A command-line command will be introduced, this will start the collection of new rates.
     2. Get all the adapters and sort them based on priority.
     3. Get all the currencies from all the platforms and combine them (as one might return more than the other).
     4. Get the current conversion for all the currencies, and store them in the DB.
     5. Store the current conversion rates in the historic DB.
     
 5. User registration
-    1. This will be a manual task for how, this might be automated by giving an authorization based on Ideal or paypal.
-    2. Because this is manual a command line command will be created to create a new account. The account will need an email address.
-        The password will be mailed to the user so he can login.
+    1. This will be a manual task for how this might be automated by giving an authorization based on Ideal or PayPal.
+    2. Because this is manual a command-line command will be created to create a new account. The account will need an email address.
+        The password will be mailed to the user so he can log in.
         
 6. Endpoints
     1. /login: Show the login
