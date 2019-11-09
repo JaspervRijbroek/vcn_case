@@ -13,8 +13,6 @@
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->middleware('auth')->name('home');
 
 Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');
