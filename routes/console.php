@@ -16,3 +16,7 @@ use Illuminate\Foundation\Inspiring;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->describe('Display an inspiring quote');
+
+Artisan::command('import-rates', function() {
+    \App\Utils\Currencies\Currencies::importRates();
+})->describe('Import the conversion rates');
