@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Utils\Currencies\Currencies;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -25,7 +26,8 @@ class HomeController extends Controller
     public function index()
     {
         return view('welcome', [
-            'currencies' => DB::table('exchange_rates')->get('currency')
+            'currencies' => Currencies::getInstance()->getCurrencies(),
+            'token' => '' // Generate a token with expiry information.
         ]);
     }
 }

@@ -13,7 +13,9 @@
         "guzzlehttp/guzzle": "^6.4",
         "laravel/framework": "5.8.*",
         "laravel/tinker": "^1.0",
-        "ext-soap": "*"
+        "ext-soap": "*",
+        "ext-json": "*",
+        "ext-simplexml": "*"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",

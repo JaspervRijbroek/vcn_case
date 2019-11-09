@@ -4,7 +4,12 @@ declare( strict_types=1 );
 
 namespace App\Utils\Currencies;
 
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
+
 class Currencies {
+    static $instance;
+
     /**
      * This method will get all the currency adapters.
      * As we will only ever interface with this class and not directly with the adapters.
@@ -34,6 +39,55 @@ class Currencies {
         return $adapters;
     }
 
+    public function getCurrencies(): array {
+        if(Cache::has('currencies')) {
+            return Cache::get('currencies');
+        }
+
+        $currencies = $this->serialCall('getCurrencies');
+        $currencyList = [];
+
+        foreach($currencies as $registry) {
+            foreach($registry as $currency) {
+                if(!isset($currencyList[$currency['symbol']])) {
+                    $currencyList[$currency['symbol']] = $currency;
+                }
+
+                if(!$currencyList[$currency['symbol']]['label'] && $currency['label']) {
+                    $currencyList[$currency['symbol']]['label'] = $currency['label'];
+                }
+            }
+        }
+
+        $currencyList = array_filter($currencyList, function($currency) {
+            return isset($currency['label']) && !empty($currency['label']) && $currency['label'];
+        });
+
+        usort($currencyList, function($a, $b) {
+            return strcmp($a['label'], $b['label']);
+        });
+
+        Cache::add('currencies', $currencyList, 24 * 60 * 60);
+
+        return $currencyList;
+    }
+
+    public function getRate(string $from, string $to) {
+        return $this->chainCall('getRate', $from, $to);
+    }
+
+    public function getHistory(string $currencyFrom, string $currencyTo, string $dateModifier): array {
+        return $this->chainCall('getHistory', $currencyFrom, $currencyTo, $dateModifier);
+    }
+
+    public static function getInstance() {
+        if(!self::$instance) {
+            self::$instance = new Currencies();
+        }
+
+        return self::$instance;
+    }
+
     /**
      * This method will call the provided method on every following adapter.
      * It will first try to call it on the first, if it fails, it will call it on the next.
@@ -43,6 +97,8 @@ class Currencies {
      *
      * @param string $method The method to call on the adapter.
      * @param mixed ...$arguments Other arguments the called method might need.
+     *
+     * @return bool|mixed The result of the first matching call.
      */
     private function chainCall($method, ...$arguments) {
         $result = false;
@@ -62,14 +118,29 @@ class Currencies {
         return $result;
     }
 
-    public static function importRates() {
-        // Get all the adapters.
-        $instance = new Currencies();
-        $rates = $instance->chainCall('getRates');
+    /**
+     * This method will call each and every adapter and will return its result.
+     *
+     * @param string $method The method to call on the adapter.
+     * @param mixed ...$arguments Other arguments the called method might need.
+     *
+     * @return array The result of all the adapters.
+     */
+    private function serialCall($method, ...$arguments): array {
+        $result = [];
 
-        echo '<pre>';
-            print_r($rates);
-        echo '</pre>';
-        die();
+        foreach($this->getAdapters() as $adapter) {
+            try {
+                $result[] = call_user_func_array([$adapter, $method], $arguments);
+            } catch(\Exception $e) {
+                var_dump($e->getMessage());
+                $result[] = false;
+            } catch (\Error $e) {
+                var_dump($e->getMessage());
+                $result[] = false;
+            }
+        }
+
+        return $result;
     }
 }
