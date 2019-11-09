@@ -74,15 +74,15 @@
             $totals.hide();
             $history.hide();
 
-            $amountFrom.on('keydown', function() {
+            $amountFrom.on('keyup', function() {
                 if(rateFrom) {
-                    $amountTo.val($amountFrom.val() * rateFrom);
+                    $amountTo.val((parseFloat($amountFrom.val()) * rateFrom).toFixed(2));
                 }
             });
 
-            $amountTo.on('keydown', function() {
+            $amountTo.on('keyup', function() {
                 if(rateTo) {
-                    $amountFrom.val($amountTo.val() * rateTo);
+                    $amountFrom.val((parseFloat($amountTo.val()) * rateTo).toFixed(2));
                 }
             });
 
@@ -122,9 +122,9 @@
                         $('[data-total-inverted]').text(rateTo.toFixed(4));
 
                         if($amountFrom.val()) {
-                            $amountTo.val($amountFrom.val() * rateFrom);
+                            $amountTo.val((parseFloat($amountFrom.val()) * rateFrom).toFixed(2));
                         } else if($amountTo.val()) {
-                            $amountFrom.val($amountTo.val() * rateTo);
+                            $amountFrom.val((parseFloat($amountTo.val()) * rateTo).toFixed(2));
                         }
 
                         $totals.show();

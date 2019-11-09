@@ -76,7 +76,7 @@ class Currencies {
         return $this->chainCall('getRate', $from, $to);
     }
 
-    public function getHistory(string $currencyFrom, string $currencyTo, string $dateModifier): array {
+    public function getHistory(string $currencyFrom, string $currencyTo, string $dateModifier) {
         return $this->chainCall('getHistory', $currencyFrom, $currencyTo, $dateModifier);
     }
 
@@ -105,13 +105,17 @@ class Currencies {
 
         foreach($this->getAdapters() as $adapter) {
             try {
-                if($result = call_user_func_array([$adapter, $method], $arguments)) {
+                $response = call_user_func_array([$adapter, $method], $arguments);
+                if($response) {
+                    $result = $response;
                     break;
                 }
             } catch(\Exception $e) {
                 // NOOP
+                continue;
             } catch (\Error $e) {
                 // NOOP
+                continue;
             }
         }
 
@@ -133,10 +137,8 @@ class Currencies {
             try {
                 $result[] = call_user_func_array([$adapter, $method], $arguments);
             } catch(\Exception $e) {
-                var_dump($e->getMessage());
                 $result[] = false;
             } catch (\Error $e) {
-                var_dump($e->getMessage());
                 $result[] = false;
             }
         }

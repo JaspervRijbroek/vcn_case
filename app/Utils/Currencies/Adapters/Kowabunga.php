@@ -75,12 +75,12 @@ class Kowabunga extends Adapter {
             return Cache::get($cacheKey);
         }
 
-        $now = Carbon::now();
         $past = Carbon::now()->modify($dateModifier);
+        $now = Carbon::now();
         $history = [];
 
-        for($i = $past; $i < $now; $i = $i->modify('+1 day')) {
-            $format = $i->format('d-m-Y');
+        for($i = $past; $i <= $now; $i = $i->modify('+1 day')) {
+            $format = $i->format('m-d-Y');
 
             $result = $this->getClient()->get('GetConversionRate', [
                 'query' => [
