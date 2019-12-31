@@ -106,4 +106,21 @@ class Kowabunga extends Adapter {
     private function parseXML( string $xml ) {
         return simplexml_load_string( $xml );
     }
+
+    public function getCurrencyRates( string $base ): array {
+        $currencies = $this->getCurrencies();
+        $rates = [];
+
+        // We can make a call for every currency here.
+        foreach($currencies as $currency) {
+            $rates[
+                $currency['symbol']
+            ] = [
+                'rate' => $this->getRate($base, $currency['symbol']),
+                'label' => $currency['label']
+            ];
+        }
+
+        return $rates;
+    }
 }

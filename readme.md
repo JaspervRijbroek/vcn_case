@@ -43,11 +43,12 @@ A few resources can be used for the conversion, the former being less reliable a
 2. Check out the provided resources, I decided that adapters are in place for this.
     1. The adapters will receive a static variable to give a priority for ordering.
     2. Based on this ordering the requests will be done, initiated by the cronjob.
-    3. An abstract adapter will be created and will serve by default a guzzle client, which method can be overwritten to support another client (SOAP for example).
-    4. The following methods will be defined:
+    3. Add Unit tests for the "interface".
+    4. An abstract adapter will be created and will serve by default a guzzle client, which method can be overwritten to support another client (SOAP for example).
+    5. The following methods will be defined:
         1. getClient
-        2. getCurrencies
-        3. getRatesByCurrency (accepts a currency code)
+        2. getRate
+        3. getHistory
 
 3. Interface information
     1. AJAX will be used to retrieve all the information from the server, this will provide for smooth user experience.
@@ -56,11 +57,7 @@ A few resources can be used for the conversion, the former being less reliable a
     4. Based on the currency conversion the historic data will be retrieved, this will also be done with AJAX.
     
 4. Cronjobs
-    1. A command-line command will be introduced, this will start the collection of new rates.
-    2. Get all the adapters and sort them based on priority.
-    3. Get all the currencies from all the platforms and combine them (as one might return more than the other).
-    4. Get the current conversion for all the currencies, and store them in the DB.
-    5. Store the current conversion rates in the historic DB.
+    1. 
     
 5. User registration
     1. This will be a manual task for how this might be automated by giving an authorization based on Ideal or PayPal.

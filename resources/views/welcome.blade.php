@@ -69,24 +69,40 @@
                 rateTo = 0,
                 chart = null,
                 $amountFrom = $('[data-amount-from]'),
-                $amountTo = $('[data-amount-to]');
+                $amountTo = $('[data-amount-to]'),
+                $switch = $('[data-switch]');
 
             $totals.hide();
             $history.hide();
 
+            $switch.on('click', function() {
+                var $from = $('#from'),
+                    $to = $('#to'),
+                    fromVal = $from.val(),
+                    toVal = $to.val();
+
+                $from.select2('destroy');
+                $to.select2('destroy');
+
+                $from.val(toVal).select2();
+                $to.val(fromVal).select2();
+
+                $from.trigger('custom-trigger');
+            });
+
             $amountFrom.on('keyup', function() {
-                if(rateFrom) {
+                if(rateFrom && $amountFrom.val()) {
                     $amountTo.val((parseFloat($amountFrom.val()) * rateFrom).toFixed(2));
                 }
             });
 
             $amountTo.on('keyup', function() {
-                if(rateTo) {
+                if(rateTo && $amountTo.val()) {
                     $amountFrom.val((parseFloat($amountTo.val()) * rateTo).toFixed(2));
                 }
             });
 
-            $('[data-currency]').on('change', function(event) {
+            $('[data-currency]').on('change custom-trigger', function(event) {
                 // If we have two values. Then we need to go.
                 var values = $('[data-currency]').toArray().map(function(item) {
                     return $(item).val();
@@ -113,8 +129,6 @@
                         $('[data-from]').text(currencyFrom);
                         $('[data-to]').text(currencyTo);
 
-                        console.log(data);
-
                         rateFrom = parseFloat(data.rate);
                         rateTo = parseFloat(data.rateReversed);
 
@@ -134,7 +148,7 @@
                         }
 
                         chart = new Chart($history.get(0), {
-                            type: 'bar',
+                            type: 'line',
                             data: {
                                 labels: data.history.map(function(item) {
                                     return item.date;
@@ -144,9 +158,9 @@
                                     data: data.history.map(function(item) {
                                         return item.rate;
                                     }),
-                                    backgroundColor: data.history.map(function() {
-                                        return '#'+Math.floor(Math.random()*16777215).toString(16);
-                                    })
+                                    backgroundColor: 'blue',
+                                    borderColor: 'blue',
+                                    fill: false
                                 }]
                             }
                         })

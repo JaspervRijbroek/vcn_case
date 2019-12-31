@@ -7,7 +7,6 @@ use Tests\TestCase;
 
 class CurrenciesTest extends TestCase
 {
-    // Make sure all the adapters are there.
     public function testCurrencyAdapters() {
         $currencies = Currencies::getInstance();
         $adapters = $currencies->getAdapters();

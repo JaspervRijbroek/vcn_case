@@ -27,4 +27,6 @@ abstract class Adapter {
     public abstract function getRate(string $currency, string $currencyTo);
 
     public abstract function getHistory(string $currencyFrom, string $currencyTo, string $dateModifier);
+
+    public abstract function getCurrencyRates(string $base): array;
 }

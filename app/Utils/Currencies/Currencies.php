@@ -4,6 +4,8 @@ declare( strict_types=1 );
 
 namespace App\Utils\Currencies;
 
+use App\conversionRate;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -88,6 +90,51 @@ class Currencies {
         return self::$instance;
     }
 
+    public static function importRates(): bool {
+        $instance = self::getInstance();
+        $currencies = $instance->serialCall('getCurrencyRates', 'EUR');
+        $currencyList = [];
+
+        if(!count($currencies)) {
+            return false;
+        }
+
+        $currencies = array_filter($currencies, function($list) {
+            return !!$list;
+        });
+
+        foreach($currencies as $registry) {
+            foreach($registry as $symbol => $value) {
+                if(!isset($currencyList[$symbol])) {
+                    $currencyList[$symbol] = $value;
+                }
+
+                if(!$currencyList[$symbol]['label'] && $value['label']) {
+                    $currencyList[$symbol]['label'] = $value['label'];
+                }
+            }
+        }
+
+        $currencyList = array_filter($currencyList, function($currency) {
+            return isset($currency['label']) && !empty($currency['label']) && $currency['label'];
+        });
+
+        usort($currencyList, function($a, $b) {
+            return strcmp($a['label'], $b['label']);
+        });
+
+        // We use EUR as base currency. So all rates will get be based on EUR.
+        foreach($currencies as $symbol => $rate) {
+            conversionRate::create([
+                'currency' => $symbol,
+                'rate' => $rate['rate'],
+                'label' => $rate['label']
+            ]);
+        }
+
+        return true;
+    }
+
     /**
      * This method will call the provided method on every following adapter.
      * It will first try to call it on the first, if it fails, it will call it on the next.
@@ -137,8 +184,10 @@ class Currencies {
             try {
                 $result[] = call_user_func_array([$adapter, $method], $arguments);
             } catch(\Exception $e) {
+                var_dump($e->getMessage());
                 $result[] = false;
             } catch (\Error $e) {
+                var_dump($e->getMessage());
                 $result[] = false;
             }
         }
